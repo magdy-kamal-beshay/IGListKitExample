@@ -1,0 +1,27 @@
+{
+  "title": "Restaurant Details Page",
+  "image": "asd asd ",
+  "menus": [
+    {
+      "title": "Menu 1",
+      "subtitle": "This is first menu 1"
+    },
+    {
+      "title": "Menu 2",
+      "subtitle": "This is first menu 2"
+    },
+    {
+      "title": "Menu 3",
+      "subtitle": "This is first menu 3"
+    },
+    {
+      "title": "Menu 4",
+      "subtitle": "This is first menu 4"
+    },
+    {
+      "title": "Menu 5",
+      "subtitle": "This is first menu 5"
+    }
+  ]
+}
+
