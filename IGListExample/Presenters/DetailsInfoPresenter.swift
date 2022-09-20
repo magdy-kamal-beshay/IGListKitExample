@@ -31,6 +31,7 @@ class DetailsInfoPresenter: NSObject, Presenter {
   
   struct Action {
     let addPressed = PassthroughSubject<Void, Never>()
+    let detailsLoaded = PassthroughSubject<Void, Never>()
   }
   
   var input: Inputs
@@ -52,6 +53,11 @@ class DetailsInfoPresenter: NSObject, Presenter {
     super.init()
     initListeners()
     addActions()
+    DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(5)) {
+      self.info = DetailsInfoInput(title: "Restaurant Details Page", image: "")
+      self.infoActions.detailsLoaded.send()
+      self.infoSubject.send(((), self.isAddEnabled))
+    }
   }
   
   private func initListeners() {
@@ -77,6 +83,7 @@ class DetailsInfoPresenter: NSObject, Presenter {
   }
   private func addActions() {
     actions[.addPressed] = infoActions.addPressed.map { $0 as Any }.eraseToAnyPublisher()
+    actions[.detailsLoaded] = infoActions.detailsLoaded.map { $0 as Any }.eraseToAnyPublisher()
   }
   
   func makeSectionController() -> ListSectionController {

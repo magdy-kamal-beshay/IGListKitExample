@@ -24,6 +24,7 @@ class DetailsViewModel {
   private let makeMenuListPresenter: (Inputs) -> MenuListPresenter
   private let makeEnablePresenter: (Inputs) -> EnablePresenter
   private let updateSubject = PassthroughSubject<Void, Never>()
+  private var detailsInfoPresenter: Presenter?
 
   init(repository: DataSource,
        detailsInfoPresenterFactory: @escaping (Inputs) -> DetailsInfoPresenter,
@@ -38,13 +39,14 @@ class DetailsViewModel {
   
   func fetchDetails() {
     repository.fetchItemDetails().sink { _ in } receiveValue: { response in
-      self.setupPresenters(details: response)
-      self.updateSubject.send(())
+//      self.setupPresenters(details: response)
+//      self.updateSubject.send(())
     }.store(in: &disbosables)
+    initalizeDetailsInfoPresenter()
   }
   
   private func setupPresenters(details: DetailsModel) {
-    setupEnablePresenter()
+//    setupEnablePresenter()
     setupDetailsPresenter(details: details)
     setupMenuPresenter(details: details)
   }
@@ -54,7 +56,7 @@ class DetailsViewModel {
 
     let info = DetailsInfoInput(title: details.title, image: details.image)
     let inputs = [
-      DetailsInputs.info: Just(info as Any).eraseToAnyPublisher(),
+      DetailsInputs.info: Just(info as Any?).eraseToAnyPublisher(),
       DetailsInputs.enabledChange: enableObservable
     ]
     let mediaPresenter = makeDetailsInfoPresenter(inputs)
@@ -69,11 +71,23 @@ class DetailsViewModel {
   private func setupMenuPresenter(details: DetailsModel) {
     let addObservable = (presentations[1] as? DetailsInfoPresenter)?.actions[.addPressed] ?? Just(Void()).eraseToAnyPublisher()
     let inputs = [
-      DetailsInputs.info: Just(details.menus as Any).eraseToAnyPublisher(),
+      DetailsInputs.info: Just(details.menus as Any?).eraseToAnyPublisher(),
       DetailsInputs.addNewRow: addObservable
     ]
     let menuPresenter = makeMenuListPresenter(inputs)
     presentations.append(menuPresenter)
   }
   
+  func initalizeDetailsInfoPresenter() {
+    detailsInfoPresenter = DetailsInfoPresenter(input: [:])
+    observeInfoPresenter()
+  }
+  
+  func observeInfoPresenter() {
+    detailsInfoPresenter?.actions[.detailsLoaded]?.sink(receiveValue: { [weak self] val in
+      guard let val = val, let self = self, let detils = self.detailsInfoPresenter else { return }
+      self.presentations.append(detils)
+      self.updateSubject.send(())
+    }).store(in: &disbosables)
+  }
 }

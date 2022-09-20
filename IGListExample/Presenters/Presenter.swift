@@ -10,12 +10,15 @@ import Foundation
 import Combine
 import IGListKit
 
-typealias Inputs = [DetailsInputs: AnyPublisher<Any, Never>]
-typealias Actions = [DetailsActions: AnyPublisher<Any, Never>]
+typealias Inputs = [DetailsInputs: AnyPublisher<Any?, Never>]
+typealias Actions = [DetailsActions: AnyPublisher<Any?, Never>]
 
 enum DetailsActions: Hashable {
   case addPressed
   case switchEnabled
+  case detailsLoaded
+  case menuLoaded
+
   static public func == (lhs: DetailsActions, rhs: DetailsActions) -> Bool {
     return lhs.hashValue == rhs.hashValue
   }
